@@ -1,10 +1,15 @@
 package com.alejandro.app.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,15 +37,39 @@ public class ControladorRest {
 	}
 	
 	@GetMapping("/clientes/{id}")
-	public Cliente buscarCliente(@PathVariable long id) {
-		return servicio.buscarPorId(id);
+	public ResponseEntity<?> buscarCliente(@PathVariable long id) {
+		Cliente cliente= null;
+		Map<String, Object> response= new HashMap<>();
+		try {
+			cliente=servicio.buscarPorId(id);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al realizar consulta a base de datos");
+			response.put("error", e.getMessage().concat(":").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String,Object>>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		if (cliente==null) {
+			response.put("mensaje", "El cliente con ID: "+id+" no existe");
+			return new ResponseEntity<Map<String,Object>>(response,HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Cliente>(cliente,HttpStatus.OK);
 	}
 	
 	@PostMapping("/clientes")
-	public Cliente guardarClientes(@RequestBody Cliente cliente) {
-		return servicio.guardar(cliente);
+	public ResponseEntity<?> guardarCliente(@RequestBody Cliente cliente) {
+		Cliente nuevoCliente = null;
+		Map<String,Object> response = new HashMap<>();
+		try {
+			nuevoCliente = servicio.guardar(cliente);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al insertar en base de datos");
+			response.put("error",e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String,Object>>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		response.put("mensaje","El cliente ha sido creado con éxito");
+		response.put("cliente",nuevoCliente);
+		return new ResponseEntity<Map<String,Object>>(response,HttpStatus.CREATED);
 	}
-	
+
 	@PutMapping("/clientes/{id}")
 	public Cliente actualizarCliente(@RequestBody Cliente cliente, @PathVariable long id) {
 		Cliente clienteUpdate = servicio.buscarPorId(id);

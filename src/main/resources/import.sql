@@ -4,5 +4,5 @@ INSERT INTO clientes (nombre,apellido,email,telefono,fecha_creacion) VALUES('Din
 INSERT INTO clientes (nombre,apellido,email,telefono,fecha_creacion) VALUES('Pepe','Mujica','pm@email.com',2323221,'2022-04-11');
 INSERT INTO clientes (nombre,apellido,email,telefono,fecha_creacion) VALUES('Juan','Chavez','jc@email.com',2323221,'2022-04-11');
 INSERT INTO clientes (nombre,apellido,email,telefono,fecha_creacion) VALUES('Pedro','Diaz','cl@email.com',2323221,'2022-04-11');
-INSERT INTO clientes (nombre,apellido,email,telefono,fecha_creacion) VALUES('Ramon','Sanchez','cl@email.com',2323221,'2022-04-11');
+INSERT INTO clientes (nombre,apellido,email,telefono,fecha_creacion) VALUES('Ramon','Sanchez','cf@email.com',2323221,'2022-04-11');
 INSERT INTO clientes (nombre,apellido,email,telefono,fecha_creacion) VALUES('Luis','Garcia','lg@email.com',2323221,'2022-04-11');
