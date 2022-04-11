@@ -71,16 +71,32 @@ public class ControladorRest {
 	}
 
 	@PutMapping("/clientes/{id}")
-	public Cliente actualizarCliente(@RequestBody Cliente cliente, @PathVariable long id) {
-		Cliente clienteUpdate = servicio.buscarPorId(id);
+	public ResponseEntity<?> actualizarCliente(@RequestBody Cliente cliente, @PathVariable long id) {
 		
-		clienteUpdate.setNombre(cliente.getNombre());
-		clienteUpdate.setApellido(cliente.getApellido());
-		clienteUpdate.setCreadAt(cliente.getCreadAt());
-		clienteUpdate.setEmail(cliente.getEmail());
-		clienteUpdate.setTelefono(cliente.getTelefono());
-
-		return servicio.guardar(clienteUpdate);
+		Cliente clienteUpdate=null;
+		Map<String,Object> response = new HashMap<>();
+		
+		clienteUpdate = servicio.buscarPorId(id);
+		
+		if(clienteUpdate == null) {
+			response.put("mensaje","Error: no se pudo editar, el cliente con ID: "+id+" no existe en la base de datos");
+			return new ResponseEntity<Map<String,Object>>(response,HttpStatus.NOT_FOUND);
+		}
+		
+		try {
+				
+			clienteUpdate.setNombre(cliente.getNombre());
+			clienteUpdate.setApellido(cliente.getApellido());
+			clienteUpdate.setEmail(cliente.getEmail());
+			clienteUpdate.setTelefono(cliente.getTelefono());
+			clienteUpdate.setCreadAt(cliente.getCreadAt());
+			servicio.guardar(clienteUpdate);
+			
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al actualizar en base de datos");
+			response.put("error",e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+		}
+		return new ResponseEntity<Map<String,Object>>(response,HttpStatus.CREATED);
 	}
 	
 	@DeleteMapping("/clientes/{id}")
