@@ -26,7 +26,7 @@ import com.alejandro.app.service.ClienteServiceImpl;
 
 @RestController
 @RequestMapping("/api")
-public class ControladorRest {
+public class ControladorRestCliente {
 	
 	@Autowired
 	private ClienteService servicio;
@@ -95,13 +95,32 @@ public class ControladorRest {
 		} catch (DataAccessException e) {
 			response.put("mensaje", "Error al actualizar en base de datos");
 			response.put("error",e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String,Object>>(response,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<Map<String,Object>>(response,HttpStatus.CREATED);
 	}
 	
 	@DeleteMapping("/clientes/{id}")
-	public void deleteCliente(@PathVariable long id) {
-		servicio.deleteCliente(id);
+	public ResponseEntity<?> deleteCliente(@PathVariable long id) {
+		Map<String,Object> response = new HashMap<>();
+		Cliente clienteUpdate = servicio.buscarPorId(id);
+		
+		if(clienteUpdate == null) {
+			response.put("mensaje","Error: no se pudo eliminar, el cliente con ID: "+id+" no existe en la base de datos");
+			return new ResponseEntity<Map<String,Object>>(response,HttpStatus.NOT_FOUND);
+		}
+		
+		try {
+			servicio.deleteCliente(id);
+		} catch (Exception e) {
+			response.put("mensaje", "Error al eliminar");
+			return new ResponseEntity<Map<String,Object>>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<Map<String,Object>>(response,HttpStatus.OK);
+		
+		//TAREA
+		//verificar si existe el id en el metodo delete
+		//crear una nueva entidad productos igual a la de cliente, como extra hacer que se asocie a un cliente
 	}
 	
 }

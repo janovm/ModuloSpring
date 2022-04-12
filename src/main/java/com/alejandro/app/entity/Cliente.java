@@ -22,7 +22,7 @@ public class Cliente implements Serializable{
 	@Column(nullable=false)
 	private String nombre;
 	private String apellido;
-	@Column(nullable=false, unique=true)
+	@Column(nullable=false)
 	private String email;
 	private int telefono;
 	@Column(name = "fecha_creacion")
